@@ -1,17 +1,20 @@
 import 'package:first_app/category.dart';
+import 'package:first_app/chats.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/description.dart';
+import 'dart:ui';
 
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
-class MyApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return _myAppState();
+    return _mainPageState();
   }
 }
 
-class _myAppState extends State<MyApp> {
+class _mainPageState extends State<MainPage> {
   void pressOnChats() {}
   void pressOnLost() {
     print("bye");
@@ -21,21 +24,11 @@ class _myAppState extends State<MyApp> {
     print("hey");
   }
 
-  void moveToLossPage(BuildContext context, String titleSen) {
+  void moveToLossFoundPage(BuildContext context, String titleSen) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) {
-          return ProductInfo();
-        },
-      ),
-    );
-  }
-
-  void moveToFoundPage(BuildContext context, String titleSen) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) {
-          return ProductInfo();
+          return ProductInfo(titleText: titleSen);
         },
       ),
     );
@@ -45,39 +38,44 @@ class _myAppState extends State<MyApp> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) {
-          return ProductInfo();
+          return const ChatsMain();
         },
       ),
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('hey'),
+          title: const Text('ReturnIt'),
         ),
         body: Container(
           width: double.infinity,
-          margin: EdgeInsets.all(50),
+          margin: const EdgeInsets.all(50),
           child: Column(
             children: [
               InkWell(
-                  onTap: () => (moveToLossPage(context, "Describe the loss")),
-                  child: categoryItem(
-                    "I found an item",
-                  )),
+                onTap: () =>
+                    (moveToLossFoundPage(context, "Describe the loss")),
+                child: const categoryItem(
+                  "I lost an item",
+                ),
+              ),
               InkWell(
-                  onTap: () =>
-                      (moveToFoundPage(context, "Describe the finding")),
-                  child: categoryItem(
-                    "I lost an item",
-                  )),
+                onTap: () =>
+                    (moveToLossFoundPage(context, "Describe the finding")),
+                child: const categoryItem(
+                  "I found an item",
+                ),
+              ),
               InkWell(
-                  onTap: () => (moveToChats(context)),
-                  child: categoryItem(
-                    "Chats",
-                  )),
+                onTap: () => (moveToChats(context)),
+                child: const categoryItem(
+                  "Chats",
+                ),
+              ),
             ],
           ),
         ),

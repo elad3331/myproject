@@ -1,37 +1,17 @@
 import 'dart:async';
-import 'dart:ui';
-import 'package:first_app/registerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:first_app/mainPage.dart';
 import 'constants.dart';
-import 'mainPage.dart';
+import 'dart:ui';
 import 'socket.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Login Demo',
-      home: LoginPage(),
-    );
-  }
-}
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
+class RegisterPage extends StatelessWidget {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
+  RegisterPage({super.key});
   void showValidationError(String message, BuildContext context) {
     // Display an error message to the user
     ScaffoldMessenger.of(context).showSnackBar(
@@ -42,30 +22,40 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void login(String userName, String password, BuildContext context) async {
-    print("Tries to Login");
-    print("here");
-    channel.sink.add("Login $userName $password");
+  void register(String userName, String password, String email,
+      BuildContext context) async {
+    print("Tries to Register");
+
+    if (userName.isEmpty) {
+      showValidationError("Username is required", context);
+      return;
+    } else if (userName.length < minUserNameLength) {
+      showValidationError(
+          "Username must be at least $minUserNameLength characters long",
+          context);
+      return;
+    } else if (password.isEmpty) {
+      showValidationError("Password is required", context);
+      return;
+    } else if (password.length < minPasswordLength) {
+      showValidationError(
+          "Password must be at least $minPasswordLength characters long",
+          context);
+      return;
+    } else if (email.isEmpty) {
+      showValidationError("Email is required", context);
+    }
+    channel.sink.add("Registration $userName $password $email");
     currentContext = context;
     MessageHandler messageHandler = MessageHandler();
     messageHandler.startListening();
-  }
-
-  void moveToRegistration(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) {
-          return RegisterPage();
-        },
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
+        title: const Text('Sign up'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -89,18 +79,22 @@ class _LoginPageState extends State<LoginPage> {
               obscureText: true,
             ),
             const SizedBox(height: 16.0),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                login(_usernameController.text, _passwordController.text,
-                    context);
-                // TODO: Implement login functionality
+                register(_usernameController.text, _passwordController.text,
+                    _emailController.text, context);
+                // TODO: Implement registration functionality
               },
-              child: const Text('Login'),
+              child: const Text('Create account'),
             ),
-            InkWell(
-              onTap: () => moveToRegistration(context),
-              child: const Text("Don't have an account yet? Sign up for free."),
-            )
           ],
         ),
       ),
